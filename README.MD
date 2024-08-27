@@ -2,7 +2,7 @@
 
 ## Overview
 
-`gen.js` is a Node.js script designed to automate certain tasks related to project setup and management. This script can clone a GitHub repository into a specified directory and perform additional setup tasks.
+`genCopilot.js` is a Node.js script designed to automate certain tasks related to project setup and management. This script can clone a GitHub repository into a specified directory and perform additional setup tasks.
 
 The Copilot Action Generator will create an Teams Toolkit App. It uses a template that is created from Teams Toolkit Generated App. This is **Custom Engine Copilot**, **AI Agent**, **Build New** application in Typescript.
 
@@ -39,10 +39,10 @@ When the secrets for Azure OpenAI are defined (see below) you can open the proje
 
 ## Usage
 
-To run the `gen.js` script, use the following command:
+To run the `genCopilot.js` script, use the following command:
 
 ```sh
-node gen.js --path <projectPath> --openAIKey <yourOpenAIKey> --deployment <yourDeployment>
+node genCopilot.js --path <projectPath> --openAIKey <yourOpenAIKey> --deployment <yourDeployment>
 ```
 
 ### Parameters
@@ -55,12 +55,12 @@ node gen.js --path <projectPath> --openAIKey <yourOpenAIKey> --deployment <yourD
 ### Example
 
 ```sh
-node gen.js --path /your/project/path -actions /your/actionsplan/path --openAIKey your_openai_key --deployment your_deployment_name
+node genCopilot.js --path /your/project/path -actions /your/actionsplan/path --openAIKey your_openai_key --deployment your_deployment_name
 ```
 
 ## Script Details
 
-The gen.js script performs the following tasks:
+The genCopilot.js script performs the following tasks:
 
 1. Parse Command-Line Arguments: Uses minimist to parse the --path, --actions, --openAIKey, and --deployment flags.
 1. Check and Create Directory: Checks if the specified directory exists. If not, it creates the directory.
@@ -76,7 +76,9 @@ If the --path flag is not provided, the script will output an error message and 
 If there are any issues during the cloning process, the script will output the error message.
 
 
-## Example actions plan
+## Sample actions plan
+
+In this repo in [sample action plan](./sample/actions.lights.json) you can find sample custom action plan that you can use.
 
 ```json
 [
@@ -114,4 +116,4 @@ If there are any issues during the cloning process, the script will output the e
 
 ## Conclusion
 
-The gen.js script is a powerful tool for automating project setup tasks. By specifying the --path, --openAIKey, and --deployment parameters, you can easily clone a GitHub repository and perform additional setup tasks in the specified directory.
+The genCopilot.js script is a powerful tool for automating project setup tasks. By specifying the --path, --openAIKey, and --deployment parameters, you can easily clone a GitHub repository and perform additional setup tasks in the specified directory.

@@ -142,7 +142,7 @@ const args = minimist(process.argv.slice(2));
 
 // If help is requested, print help and exit
 if (args.help) {
-    console.log("\nUsage: node gen.js --path <projectPath> --actions <actionsFile> --key <openAIKey> --endpoint <openAIEndpoint> --deployment <openAIDeployment>\n");
+    console.log("\nUsage: node genCopilot.js --path <projectPath> --actions <actionsFile> --key <openAIKey> --endpoint <openAIEndpoint> --deployment <openAIDeployment>\n");
     process.exit(0);
 }
 

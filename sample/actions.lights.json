@@ -1,0 +1,81 @@
+[
+    {
+        "name": "turnOnLight",
+        "description": "Turn Light On",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name of the light to turn on"
+                },
+                "color": {
+                    "type": "string",
+                    "description": "The color of the light"
+                }
+            },
+            "required": [
+                "title",
+                "description"
+            ]
+        }
+    },
+    {
+        "name": "turnoffLight",
+        "description": "Turn Light Off",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name of the light to turn on"
+                }
+            },
+            "required": [
+                "title"
+            ]
+        }
+    },
+    {
+        "name": "changeLightColor",
+        "description": "Change Light Color",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name of the light to turn on"
+                },
+                "color": {
+                    "type": "string",
+                    "description": "The color of the light"
+                }
+            },
+            "required": [
+                "title",
+                "description"
+            ]
+        }
+    },
+    {
+        "name": "changeLightBrightness",
+        "description": "Change Light Brightness",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name of the light to turn on"
+                },
+                "brightness": {
+                    "type": "string",
+                    "description": "The brightness of the light"
+                }
+            },
+            "required": [
+                "title",
+                "description"
+            ]
+        }
+    }
+]
