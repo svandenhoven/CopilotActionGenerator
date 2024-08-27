@@ -42,20 +42,21 @@ When the secrets for Azure OpenAI are defined (see below) you can open the proje
 To run the `genCopilot.js` script, use the following command:
 
 ```sh
-node genCopilot.js --path <projectPath> --actions <pathToActionsFile> --openAIKey <yourOpenAIKey> --deployment <yourDeployment>
+node genCopilot.js --path <projectPath> --actions <pathToActionsFile> --key <yourOpenAIKey> --endpoint <yourEndpoint> --deployment <yourDeployment>
 ```
 
 ### Parameters
 
 - path: Specifies the directory where the GitHub repository should be cloned and the setup tasks should be performed.
 - actions: Specifies the path of the actions plan to start the generation from. If omitted it uses the default action plan that is in template.
-- openAIKey: Your Azure OpenAI API key.
+- key: Your Azure OpenAI API key.
+- endpoint: Endpoint to your Azure Open AI resource
 - deployment: Your Azure OpenAI API deployment name.
 
 ### Example
 
 ```sh
-node genCopilot.js --path /your/project/path -actions /your/actionsplan/path --openAIKey your_openai_key --deployment your_deployment_name
+node genCopilot.js --path "c:\repos\generatedcopilot" -actions "c:\samples\actionplan.json" --key "123456" --endpoint https://sample.openai.azure.com --deployment gpt-4
 ```
 
 ## Script Details
