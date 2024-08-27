@@ -45,31 +45,69 @@ node gen.js --path <projectPath> --openAIKey <yourOpenAIKey> --deployment <yourD
 ### Parameters
 
 - --path: Specifies the directory where the GitHub repository should be cloned and the setup tasks should be performed.
+- --actions: Specifies the path of the actions plan to start the generation from. If omitted it uses the default actionplan that is in template.
 - --openAIKey: Your Azure OpenAI API key.
 - --deployment: Your Azure OpenAI API deployment name.
 
 ### Example
 
 ```sh
-node gen.js --path /your/project/path --openAIKey your_openai_key --deployment your_deployment_name
+node gen.js --path /your/project/path -actions /your/actionsplan/path --openAIKey your_openai_key --deployment your_deployment_name
 ```
 
 ## Script Details
 
 The gen.js script performs the following tasks:
 
-1. Parse Command-Line Arguments: Uses minimist to parse the --path, --openAIKey, and --deployment flags.
+1. Parse Command-Line Arguments: Uses minimist to parse the --path, --actions, --openAIKey, and --deployment flags.
 1. Check and Create Directory: Checks if the specified directory exists. If not, it creates the directory.
 1. Clone GitHub Repository: Clones a specified GitHub repository into the provided directory.
 1. Create Secrets File: Creates a secrets file with the provided OpenAI key and deployment information.
 1. Setup Paths: Sets up various paths for actions and source files.
-1. Read Actions File: Reads the actions file from the specified path.
+1. Read Actions File: Reads the actions file from the specified path. It will use actionsplan if defined and copy it to project. If not defined it will use the default on. 
 1. Generate Code for Actions: Processes the actions to generate code.
 
 ## Error Handling
 
 If the --path flag is not provided, the script will output an error message and exit.
 If there are any issues during the cloning process, the script will output the error message.
+
+
+## Example actions plan
+
+```json
+[
+    {
+        "name": "GetProductInfo",
+        "description": "Get information about a defined product",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "productId": {
+                    "type": "string",
+                    "description": "The ID of the product to get information about"
+                }
+            },
+            "required": [
+                "productId"
+            ]
+        }
+    },
+    {
+        "name": "ListProducts",
+        "description": "List all products",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "description": "The maximum number of products to return"
+                }
+            }
+        }
+    }
+]
+```
 
 ## Conclusion
 

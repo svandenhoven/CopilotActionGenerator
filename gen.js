@@ -133,9 +133,18 @@ AZURE_OPENAI_DEPLOYMENT_NAME='${openAIDeployment}'
     fs.writeFileSync(secretsFile, secrets);
 }
 
+
+
 // Main
+
 // Parse command-line arguments
 const args = minimist(process.argv.slice(2));
+
+// If help is requested, print help and exit
+if (args.help) {
+    console.log("\nUsage: node gen.js --path <projectPath> --actions <actionsFile> --key <openAIKey> --endpoint <openAIEndpoint> --deployment <openAIDeployment>\n");
+    process.exit(0);
+}
 
 // Access the value of the --path flag
 const projectPath = args.path;
@@ -143,6 +152,14 @@ if (!projectPath) {
     console.error("Error: --path flag is not provided.");
     process.exit(1);
 }
+
+// Set Path constants
+const actionsFile = projectPath + actionsJsonFile;
+const promptFilePath = projectPath + promptFile;
+const actionsCodeFile = projectPath + actionsTsFile;
+const appCodeFile = projectPath + appTsFile;
+const appSrcFolder = projectPath + appSrcPath;
+const customActionsFileDefined = false;
 
 // Access the value of the --openAIKey flag
 let openAIKey = args.key;
@@ -162,7 +179,7 @@ if (!openAIDeployment) {
     openAIDeployment = "<<Your_Azure_OpenAI_API_Deployment>>";
 }
 
-// check if projectPath exists, if not
+// check if projectPath exists, if not create it
 if (!fs.existsSync(projectPath)) {
     console.info(`ProjectPath does not exist: ${projectPath}. Let create it`);
     fs.mkdirSync(projectPath);
@@ -172,13 +189,13 @@ if (!fs.existsSync(projectPath)) {
     createTestToolSecretsFile(projectPath, openAIKey, openAIEndpoint, openAIDeployment);
 }
 
-
-// Paths
-const actionsFile = projectPath + actionsJsonFile;
-const promptFilePath = projectPath + promptFile;
-const actionsCodeFile = projectPath + actionsTsFile;
-const appCodeFile = projectPath + appTsFile;
-const appSrcFolder = projectPath + appSrcPath;
+// When custom actions file is defined, copy it to the project
+// Access the value of the --actions flag
+const definedActionsFile = args.actions;
+if (definedActionsFile) {
+    // copy custom actions file to the project
+    fs.copyFileSync(definedActionsFile, actionsFile);
+}
 
 // Read the actions file
 console.info(`Get the actions from: ${actionsFile}`);
