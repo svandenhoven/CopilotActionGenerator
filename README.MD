@@ -8,8 +8,11 @@ The Copilot Action Generator will create an Teams Toolkit App. It uses a templat
 
 It will read the actions.json in the /prompts/planner/actions.json file and will generate code for the actions defined.
 
+When the secrets for Azure OpenAI are defined (see below) you can open the project in Visual Code (with Teams Toolkit Installed) and press F5 to run it.
+
 ## Prerequisites
 
+- Teams Toolkit installed in Visual Code
 - Node.js installed on your machine.
 - Git installed on your machine.
 - `minimist` library for parsing command-line arguments.
