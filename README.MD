@@ -1,7 +1,11 @@
-# Documentation for `gen.js`
+# Documentation for `Copilot Action Generator`
 
 ## Overview
 `gen.js` is a Node.js script designed to automate certain tasks related to project setup and management. This script can clone a GitHub repository into a specified directory and perform additional setup tasks.
+
+The Copilot Action Generator will create an Teams Toolkit App. It uses a template that is created from Teams Toolkit Generated App. This is **Custom Engine Copilot**, **AI Agent**, **Build New** application in Typescript.
+
+It will read the actions.json in the /prompts/planner/actions.json file and will generate code for the actions defined.
 
 ## Prerequisites
 - Node.js installed on your machine.
