@@ -11,7 +11,7 @@
 ## Installation
 1. **Clone the Repository**:
     ```sh
-    git clone https://github.com/your-repo-url.git
+    git clone https://github.com/svandenhoven/CopilotActionGenerator
     ```
 2. **Navigate to the Project Directory**:
     ```sh
