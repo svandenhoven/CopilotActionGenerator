@@ -1,6 +1,7 @@
 # Documentation for `Copilot Action Generator`
 
 ## Overview
+
 `gen.js` is a Node.js script designed to automate certain tasks related to project setup and management. This script can clone a GitHub repository into a specified directory and perform additional setup tasks.
 
 The Copilot Action Generator will create an Teams Toolkit App. It uses a template that is created from Teams Toolkit Generated App. This is **Custom Engine Copilot**, **AI Agent**, **Build New** application in Typescript.
@@ -8,25 +9,33 @@ The Copilot Action Generator will create an Teams Toolkit App. It uses a templat
 It will read the actions.json in the /prompts/planner/actions.json file and will generate code for the actions defined.
 
 ## Prerequisites
+
 - Node.js installed on your machine.
 - Git installed on your machine.
 - `minimist` library for parsing command-line arguments.
 
 ## Installation
+
 1. **Clone the Repository**:
+
     ```sh
     git clone https://github.com/svandenhoven/CopilotActionGenerator
     ```
+
 2. **Navigate to the Project Directory**:
+
     ```sh
     cd your-repo-directory
     ```
+
 3. **Install Dependencies**:
+
     ```sh
     npm install
     ```
 
 ## Usage
+
 To run the `gen.js` script, use the following command:
 
 ```sh
@@ -39,7 +48,7 @@ node gen.js --path <projectPath> --openAIKey <yourOpenAIKey> --deployment <yourD
 - --openAIKey: Your Azure OpenAI API key.
 - --deployment: Your Azure OpenAI API deployment name.
 
-### Example 
+### Example
 
 ```sh
 node gen.js --path /your/project/path --openAIKey your_openai_key --deployment your_deployment_name
@@ -63,4 +72,5 @@ If the --path flag is not provided, the script will output an error message and 
 If there are any issues during the cloning process, the script will output the error message.
 
 ## Conclusion
+
 The gen.js script is a powerful tool for automating project setup tasks. By specifying the --path, --openAIKey, and --deployment parameters, you can easily clone a GitHub repository and perform additional setup tasks in the specified directory.
