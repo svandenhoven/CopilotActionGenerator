@@ -11,6 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@azure/identity": "^4.4.1",
+    "@azure/openai": "^1.0.0-beta.12",
     "minimist": "^1.2.8"
   }
 }

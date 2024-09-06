@@ -48,27 +48,37 @@ node genCopilot.js --path <projectPath> --actions <pathToActionsFile> --key <you
 ### Parameters
 
 - path: Specifies the directory where the GitHub repository should be cloned and the setup tasks should be performed.
-- actions: Specifies the path of the actions plan to start the generation from. If omitted it uses the default action plan that is in template.
 - key: Your Azure OpenAI API key.
 - endpoint: Endpoint to your Azure Open AI resource
 - deployment: Your Azure OpenAI API deployment name.
+- prompt: Specifies a prompt to start of the generation of an action plan. If omitted the --actions need to be used
+- actions: Specifies the path of the actions plan to start the generation from. If omitted it uses the default action plan that is in template.
 
 ### Example
 
+Below example with a prompt to generate an action plan
+
 ```sh
-node genCopilot.js --path "c:\repos\generatedcopilot" -actions "c:\samples\actionplan.json" --key "123456" --endpoint https://sample.openai.azure.com --deployment gpt-4
+node genCopilot.js --path "c:\repos\generatedcopilot" --key "123456" --endpoint https://sample.openai.azure.com --deployment gpt-4 --prompt "Can you make an actionplan to manage Products? It should be able to add, remove, list and search for products by name and id."
+```
+
+Below example that used an existing action plan
+
+```sh
+node genCopilot.js --path "c:\repos\generatedcopilot" --key "123456" --endpoint https://sample.openai.azure.com --deployment gpt-4 --actions "c:\samples\actionplan.json"
 ```
 
 ## Script Details
 
 The genCopilot.js script performs the following tasks:
 
-1. Parse Command-Line Arguments: Uses minimist to parse the --path, --actions, --openAIKey, and --deployment flags.
+1. Parse Command-Line Arguments: Uses minimist to parse the --path, --actions, --prompt, --openAIKey, and --deployment flags.
 1. Check and Create Directory: Checks if the specified directory exists. If not, it creates the directory.
 1. Clone GitHub Repository: Clones a specified GitHub repository into the provided directory.
 1. Create Secrets File: Creates a secrets file with the provided OpenAI key and deployment information.
 1. Setup Paths: Sets up various paths for actions and source files.
-1. Read Actions File: Reads the actions file from the specified path. It will use actionsplan if defined and copy it to project. If not defined it will use the default on. 
+1. Generate action plan from prompt: if prompt is defined a action plan will be created from the prompt.
+1. Read Actions File: Reads the actions file from the specified path. It will use actions plan if defined and copy it to project. If not defined it will use the default on. 
 1. Generate Code for Actions: Processes the actions to generate code.
 
 ## Error Handling

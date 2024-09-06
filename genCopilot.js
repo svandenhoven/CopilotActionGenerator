@@ -2,6 +2,9 @@
 const fs = require('fs');
 const minimist = require('minimist');
 const { execSync } = require('child_process');
+const { OpenAIClient, AzureKeyCredential } = require('@azure/openai');
+const { get } = require('http');
+const path = require('path');
 
 // Constants
 const actionsJsonFile = "/src/prompts/planner/actions.json"
@@ -13,8 +16,15 @@ const repoUrl = 'https://github.com/svandenhoven/TemplateAgentApp.git';
 
 function getActions(actionsFile) {
     // read the actions file
-    return JSON.parse(fs.readFileSync(actionsFile));
-    
+    try {
+        const actionsContent = fs.readFileSync(actionsFile, 'utf-8');
+        const actions = JSON.parse(actionsContent);
+        return actions;
+    }
+    catch (err) {
+        console.error(`Error: ${err.message}`);
+        process.exit(1);
+    }   
 }
 
 function isFunctionDefined(filePath, functionName) {
@@ -34,13 +44,20 @@ export interface ${interfaceName} {
     // Add parameters here
 }
 `;
-    const properties = action.parameters.properties;
-    let parametersCode = '';
-    for (const [key, value] of Object.entries(properties)) {
-        parametersCode += `    ${key}: ${value.type};\n`;
+    let interfaceContent = interfaceTemplate;
+    if (action.parameters) {
+        const properties = action.parameters.properties;
+        let parametersCode = '';
+        for (const [key, value] of Object.entries(properties)) {
+            // replace integer by number for TypeScript reasons
+            let type = value.type;
+            if (value.type.toLowerCase() === 'integer') {
+                type = 'number';
+            }
+            parametersCode += `    ${key}: ${type};\n`;
+        }
+        interfaceContent = interfaceTemplate.replace('// Add parameters here', parametersCode.trim());
     }
-
-    interfaceContent = interfaceTemplate.replace('// Add parameters here', parametersCode.trim());
 
     const interfaceFile = `${appSrcFolder}/${interfaceName}.ts`;
     fs.writeFileSync(interfaceFile, interfaceContent);
@@ -135,7 +152,85 @@ AZURE_OPENAI_DEPLOYMENT_NAME='${openAIDeployment}'
 
 
 
-// Main
+// ----------------------------------
+// Main Process
+// ----------------------------------
+
+async function main() {
+
+    if (definedActionsFile) {
+        //check if the file exists
+        if (!fs.existsSync(definedActionsFile)) {
+            console.error(`Error: The file ${definedActionsFile} does not exist.`);
+            process.exit(1);
+        }
+        // check if the defined action file is valid json
+        try {
+
+            JSON.parse(fs.readFileSync(definedActionsFile));
+        }
+        catch (err) {
+            console.error(`Error: The file ${definedActionsFile} is not a valid json file.`);
+            process.exit(1);
+        }
+    }
+
+    let generateActions = '';
+    if (definedPrompt) {
+        const sampleActions = getActions(path.resolve(__dirname, 'sample/actions.lights.json'));
+        const client = new OpenAIClient(openAIEndpoint, new AzureKeyCredential(openAIKey), );
+        const messages = [
+            { role: "system", content: systemPrompt + JSON.stringify(sampleActions, null, 2) },
+            { role: "user", content: definedPrompt },
+          ];
+        console.log(`Generated the action plan from the prompt`);
+        const { id, created, choices, usage } = await client.getChatCompletions(openAIDeployment, messages, {temperature: 0.7, topP: 0.95} );
+
+        // get the action plan from the response
+        if (choices && choices[0] && choices[0].message && choices[0].message.content) {
+            const content = choices[0].message.content;
+            const match = content.match(/```json([\s\S]*?)```/);
+            if (match && match[1]) {
+                const jsonString = match[1].trim();
+                generateActions = jsonString;
+            } else {
+                console.log("No JSON content found between ```json and ```");
+                generateActions = content;
+            }
+        } else {
+            console.log("No content found in choices[0].message.content");
+        }
+    }
+
+    // check if projectPath exists, if not create it
+    if (!fs.existsSync(projectPath)) {
+        console.info(`ProjectPath does not exist: ${projectPath}. Let create it`);
+        fs.mkdirSync(projectPath);
+        // clone the project
+        console.info(`Clone the project from: ${repoUrl} into ${projectPath}`);
+        cloneRepo(repoUrl, projectPath);
+        console.info(`Project cloned successfully`);
+        console.info(`Create the secrets file.`);
+        createTestToolSecretsFile(projectPath, openAIKey, openAIEndpoint, openAIDeployment);
+        if (definedActionsFile) {
+            // copy custom actions file to the project
+            fs.copyFileSync(definedActionsFile, actionsFile);
+        }
+        if (definedPrompt) {
+            fs.writeFileSync(actionsFile, generateActions);
+        }
+    }
+
+    // Read the actions file
+    console.info(`Get the actions from: ${actionsFile}`);
+    const actions = getActions(actionsFile);
+    // Process the actions to generate code for the actions
+    console.info(`Generate code for actions`);
+    const activities = processActions(actions);
+
+    console.log(`Code created for\n: ${activities}`);
+    console.log(`The code is generated in the folder: ${projectPath}`);
+}
 
 // Parse command-line arguments
 const args = minimist(process.argv.slice(2));
@@ -153,13 +248,17 @@ if (!projectPath) {
     process.exit(1);
 }
 
+// Constants 
+const systemPrompt = `You are a system generating action plans based on the input of the user. 
+The action plan must be a list and always returning a json list and have the below structure which is example for action to manage lights.
+ Do not add parameters property if these are not needed.\n`;
+
 // Set Path constants
 const actionsFile = projectPath + actionsJsonFile;
 const promptFilePath = projectPath + promptFile;
 const actionsCodeFile = projectPath + actionsTsFile;
 const appCodeFile = projectPath + appTsFile;
 const appSrcFolder = projectPath + appSrcPath;
-const customActionsFileDefined = false;
 
 // Access the value of the --openAIKey flag
 let openAIKey = args.key;
@@ -179,29 +278,14 @@ if (!openAIDeployment) {
     openAIDeployment = "<<Your_Azure_OpenAI_API_Deployment>>";
 }
 
-// check if projectPath exists, if not create it
-if (!fs.existsSync(projectPath)) {
-    console.info(`ProjectPath does not exist: ${projectPath}. Let create it`);
-    fs.mkdirSync(projectPath);
-    // clone the project
-    console.info(`Clone the project from: ${repoUrl} into ${projectPath}`);
-    cloneRepo(repoUrl, projectPath);
-    createTestToolSecretsFile(projectPath, openAIKey, openAIEndpoint, openAIDeployment);
-}
-
 // When custom actions file is defined, copy it to the project
 // Access the value of the --actions flag
 const definedActionsFile = args.actions;
-if (definedActionsFile) {
-    // copy custom actions file to the project
-    fs.copyFileSync(definedActionsFile, actionsFile);
-}
 
-// Read the actions file
-console.info(`Get the actions from: ${actionsFile}`);
-const actions = getActions(actionsFile);
-// Process the actions to generate code for the actions
-console.info(`Generate code for actions`);
-const activities = processActions(actions);
+// When prompt is defined, use it to generate actions
+const definedPrompt = args.prompt
 
-console.log(`Code created for\n: ${activities}`);
+main().catch(err => {
+    console.error(`Error: ${err}`);
+    process.exit(1);
+});
